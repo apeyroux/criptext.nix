@@ -1,0 +1,3 @@
+#+begin_src sh
+nix-env -if https://github.com/apeyroux/molotov.nix/archive/master.tar.gz
+#+end_src
