@@ -2,17 +2,18 @@ with import <nixpkgs> {};
 
 let
 
-  version = "4.1.0";
+  version = "0.26.1";
 
-  molotov-app = fetchurl {
-    url = "http://desktop-auto-upgrade.molotov.tv/linux/${version}/molotov.AppImage";
-    sha256 = "14kh7ch6r3gk7j5ylk3hch1db87f69rli23rnh6kzx89nvpjs5vl";
+  criptext-app = fetchurl {
+    url = "https://cdn.criptext.com/Criptext-Email-Desktop/linux/Criptext-latest.AppImage";
+    sha256 = "0p7zqjw4ra7h0jfsra2vcv3vn9jny77i81y90dvwvavs22w6hi1l";
     executable = true;
   };
 
-  molotov-bin = writeScriptBin "molotov" ''
+  criptext-bin = writeScriptBin "criptext" ''
     #!${pkgs.stdenv.shell}
-    ${appimage-run}/bin/appimage-run ${molotov-app}
+
+    XDG_DATA_DIRS=${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS ${appimage-run}/bin/appimage-run ${criptext-app}
   '';
 
-in molotov-bin
+in criptext-bin
