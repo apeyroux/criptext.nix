@@ -2,11 +2,11 @@ with import <nixpkgs> {};
 
 let
 
-  version = "0.28.5";
+  version = "0.29.0";
 
   criptext-app = fetchurl {
     url = "https://cdn.criptext.com/Criptext-Email-Desktop/linux/Criptext-latest.AppImage";
-    sha256 = "1ywjbnksdv8hi71bz7x3q1mpi3vxyfqqpwz451y9qy48mwwfizha";
+    sha256 = "sha256:1kc35bfq5qv73qnb7skybic8v3kviczr2i9yg3ypp59dk50cvzdc";
     executable = true;
   };
 
