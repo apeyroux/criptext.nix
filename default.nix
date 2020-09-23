@@ -2,28 +2,39 @@ with import <nixpkgs> {};
 
 let
 
-  version = "0.29.0";
+  pname = "criptext";
+  version = "0.30.2";
+  name = "${pname}-${version}";
 
-  criptext-app = fetchurl {
+  src = fetchurl {
     url = "https://cdn.criptext.com/Criptext-Email-Desktop/linux/Criptext-latest.AppImage";
-    sha256 = "sha256:1kc35bfq5qv73qnb7skybic8v3kviczr2i9yg3ypp59dk50cvzdc";
-    executable = true;
+    sha256 = "0zndg7s4rydxf9p3ngwy9c077cizwbdiqm9jqa89xl48y92wqbz6";
   };
 
-  apprun = appimage-run.override {
-    extraPkgs = pkgs: [
-      libsecret
-      sqlite
-      
-      corefonts
-      dejavu_fonts
-    ];
-  };
+  appimageContents = appimageTools.extractType2 { inherit name src; };
+in  appimageTools.wrapType2 {
+  inherit name src;
+
+  extraPkgs = pkgs: with pkgs; [
+    libsecret
+  ];
   
-  criptext-bin = writeScriptBin "criptext" ''
-    #!${pkgs.stdenv.shell}
-
-    XDG_DATA_DIRS=${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS FONTCONFIG_FILE=${pkgs.fontconfig.out}/etc/fonts/fonts.conf ${apprun}/bin/appimage-run ${criptext-app}
+  extraInstallCommands = ''
+    mv $out/bin/${name} $out/bin/${pname}
+    install -m 444 -D \
+      ${appimageContents}/${pname}.desktop \
+      $out/share/applications/${pname}.desktop
+    substituteInPlace $out/share/applications/${pname}.desktop \
+      --replace 'Exec=AppRun' 'Exec=${pname}'
+    cp -r ${appimageContents}/usr/share/icons $out/share
   '';
 
-in criptext-bin
+  meta = with stdenv.lib; {
+    description = "Molotov, TV and on-demand provider";
+    homepage = "https://www.molotov.tv";
+    license = licenses.unfree;
+    maintainers = with maintainers; [ apeyroux ];
+    platforms = [ "x86_64-linux" ];
+  };
+
+}
